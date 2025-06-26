@@ -2,12 +2,12 @@ ShadowMap =
 {
     width = nil,
     height = nil,
-    zBuffer = nil
+    zBuffer = nil,
+    Light = nil
 }
 
 Vector = require("VectorOperation")
 Mat = require("MatrixOperation")
-Shader = require("Blinn-PhongShading")
 MVPMat = require("MVPTransfer")
 
 function ShadowMap:init()
@@ -34,13 +34,12 @@ function ShadowMap:SetzBuffer(x,y,z)
     if x >= 1 and x <= self.width and y >= 1 and y <= self.height then 
         if ShadowMap.zBuffer[y][x] ==nil or z <ShadowMap.zBuffer[y][x]then
             ShadowMap.zBuffer[y][x] = z
-            --error(x.." "..y.." "..z)
         end
     end
 end
 
 function ShadowMap:TransferViewToLight(vertex)
-   return MVPMat:MVPTranserAccordingToCamera(vertex,Shader.Light.postion,Vector:new(0,0,0):sub(Shader.Light.postion),MVPMat.up:mul(1))
+   return MVPMat:MVPTranserAccordingToCamera(vertex,self.Light.postion,Vector:new(0,0,0):sub(self.Light.postion),MVPMat.up:mul(1))
 end
 
 function ShadowMap: ShadowMapZrenderer(vertext1,vertext2,vertext3)
@@ -59,8 +58,6 @@ function ShadowMap: ShadowMapZrenderer(vertext1,vertext2,vertext3)
         local c = 1-a-b
         return a,b,c
     end
-
-    --ShadowMap:clear()
 
     for x = minX, maxX do
         for y = minY, maxY do

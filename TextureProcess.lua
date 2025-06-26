@@ -5,6 +5,9 @@ function Texture:loadImage (img)
     Texture.width = img:getWidth()
     Texture.height = img:getHeight()
 end
+function Texture:unloadImage()
+    Texture.img = nil
+end
 
 local function LerpColor(r1,g1,b1,a1,r2,g2,b2,a2,t)
     local r = r1 + (r2-r1)*t

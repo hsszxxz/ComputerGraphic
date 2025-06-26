@@ -20,12 +20,11 @@ local hexInput ={
 local color={1,1,1}
 
 function love.load()
-    local objfile = love.filesystem.newFile("Assets/test.obj")
+    local objfile = love.filesystem.newFile("Assets/testShadow.obj")
     local font = love.graphics.newFont("Assets/STFANGSO.TTF", 16)
     love.graphics.setFont(font)
 
     texture = love.image.newImageData("Assets/texture.png")
-    Texture:loadImage(texture)
 
     model = require("ModelLoad").loadObj(objfile)
     MVPMat.width=love.graphics.getWidth()
@@ -89,18 +88,27 @@ function love.keypressed(key)
     end
     if key =="e" then
         isRender = not isRender
+        Render:SetShader("RasterizeShader")
     end
     if key =="m" then
         isMSAA = not isMSAA
+        Render:SetShader("RasterizeMSAAShader")
     end
     if key =="b" then
         isBlinn = not isBlinn
+        Render:SetShader("Blinn-PhongShader")
     end
     if key =="t" then
         isTexture = not isTexture
+        if isTexture then
+            Texture:loadImage(texture)
+        else
+            Texture:unloadImage()
+        end
     end
     if key =="f" then
         isShadow = not isShadow
+        Render:SetShader("Blinn-PhongShadowShader")
     end
 end
 
@@ -127,10 +135,10 @@ local function drawTiShi()
     love.graphics.print("鼠标中键:旋转目标物体",35,80)
     love.graphics.print("鼠标滚轮:放缩目标物体",35,100)
     love.graphics.print("E:开启/关闭光栅化",35,120)
-    love.graphics.print("M:开启/关闭MSAA抗锯齿",35,140)
-    love.graphics.print("B:开启/关闭Blinn-Phong",35,160)
+    love.graphics.print("M:MSAA抗锯齿普通光栅化",35,140)
+    love.graphics.print("B:Blinn-Phong模型",35,160)
     love.graphics.print("T:开启/关闭贴图",35,180)
-    love.graphics.print("F:开启/关闭阴影",35,200)
+    love.graphics.print("F:有阴影的Blinn-Phong模型",35,200)
 end
 
 function love.textinput(t)
@@ -157,7 +165,11 @@ function love.draw()
             local v4,normal4,vt4 = model.vertices[face[4].v],model.normals[face[4].vn],model.texcoords[face[4].vt]
             local point4Vertex =MVPMat:MVPTransfer(v4,normal4,vt4)
             if isRender then
-                Render:rasterizeQuad(point1Vertex,point2Vertex,point3Vertex,point4Vertex,color,isMSAA,isBlinn,isTexture,isShadow)
+                Render:vert({point1Vertex,point2Vertex,point3Vertex})
+                Render:frag({acolor = color})
+                Render:vert({point1Vertex,point3Vertex,point4Vertex})
+                Render:frag({acolor = color})
+                --Render:rasterizeQuad(point1Vertex,point2Vertex,point3Vertex,point4Vertex,color,isMSAA,isBlinn,isTexture,isShadow)
             else
                 local x1,y1 = point1Vertex.positionInScreen.components[1],point1Vertex.positionInScreen.components[2]
                 local x2,y2 = point2Vertex.positionInScreen.components[1],point2Vertex.positionInScreen.components[2]
@@ -168,7 +180,9 @@ function love.draw()
             end
         else
             if (isRender) then
-                Render:rasterizeTriangle(point1Vertex,point2Vertex,point3Vertex,color,isMSAA,isBlinn,isTexture,isShadow)
+                Render:vert({point1Vertex,point2Vertex,point3Vertex})
+                Render:frag({acolor = color})
+                --Render:rasterizeTriangle(point1Vertex,point2Vertex,point3Vertex,color,isMSAA,isBlinn,isTexture,isShadow)
             end
         end
     end
