@@ -4,7 +4,7 @@ MVPTransfer = require("MVPTransfer")
 ShadowMap = require("ShadowMap")
 
 local mode = {}
-mode.Light ={postion = Vector:new(4,4,7),intensity = 40, ambientColor = Vector:new(1,1,1,1)}
+mode.Light ={postion = Vector:new(4,4,7),intensity = 30, ambientColor = Vector:new(1,1,1,1)}
 mode.DiffuseCoefficient = 3
 mode.SpecularCoefficient = 5
 mode.AmbientCoefficient = 0.05
@@ -70,6 +70,7 @@ local function BlinnPhong(x,y,parameter)
     end
 
     acolor = acolor:mul(diffuse):add(acolor:mul(specular)):add(mode.Light.ambientColor:mul(ambient))
+    acolor.components[4] =1
     acolor = acolor:mul(ShadowValue)
     return acolor.components
 end

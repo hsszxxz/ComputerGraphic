@@ -6,10 +6,7 @@ Render = require("Renderer")
 Texture = require("TextureProcess")
 local prevMouseX, prevMouseY = 0, 0
 local isRender = false -- 是否开启光栅化
-local isMSAA = false -- 是否开启抗锯齿
-local isBlinn = false -- 是否开启Blinn-Phong
 local isTexture = false --是否使用贴图
-local isShadow = false --是否开启阴影
 local texture;
 
 local hexInput ={
@@ -20,7 +17,7 @@ local hexInput ={
 local color={1,1,1}
 
 function love.load()
-    local objfile = love.filesystem.newFile("Assets/testShadow.obj")
+    local objfile = love.filesystem.newFile("Assets/test.obj")
     local font = love.graphics.newFont("Assets/STFANGSO.TTF", 16)
     love.graphics.setFont(font)
 
@@ -91,11 +88,9 @@ function love.keypressed(key)
         Render:SetShader("RasterizeShader")
     end
     if key =="m" then
-        isMSAA = not isMSAA
         Render:SetShader("RasterizeMSAAShader")
     end
     if key =="b" then
-        isBlinn = not isBlinn
         Render:SetShader("Blinn-PhongShader")
     end
     if key =="t" then
@@ -107,7 +102,8 @@ function love.keypressed(key)
         end
     end
     if key =="f" then
-        isShadow = not isShadow
+        local objfile = love.filesystem.newFile("Assets/testShadow.obj")
+        model = require("ModelLoad").loadObj(objfile)
         Render:SetShader("Blinn-PhongShadowShader")
     end
 end
@@ -169,7 +165,6 @@ function love.draw()
                 Render:frag({acolor = color})
                 Render:vert({point1Vertex,point3Vertex,point4Vertex})
                 Render:frag({acolor = color})
-                --Render:rasterizeQuad(point1Vertex,point2Vertex,point3Vertex,point4Vertex,color,isMSAA,isBlinn,isTexture,isShadow)
             else
                 local x1,y1 = point1Vertex.positionInScreen.components[1],point1Vertex.positionInScreen.components[2]
                 local x2,y2 = point2Vertex.positionInScreen.components[1],point2Vertex.positionInScreen.components[2]
@@ -182,7 +177,6 @@ function love.draw()
             if (isRender) then
                 Render:vert({point1Vertex,point2Vertex,point3Vertex})
                 Render:frag({acolor = color})
-                --Render:rasterizeTriangle(point1Vertex,point2Vertex,point3Vertex,color,isMSAA,isBlinn,isTexture,isShadow)
             end
         end
     end

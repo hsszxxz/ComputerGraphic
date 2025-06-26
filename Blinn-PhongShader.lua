@@ -3,7 +3,7 @@ Vector = require("VectorOperation")
 MVPTransfer = require("MVPTransfer")
 
 local mode = {}
-mode.Light ={postion = Vector:new(4,4,7),intensity = 40, ambientColor = Vector:new(1,1,1,1)}
+mode.Light ={postion = Vector:new(4,4,7),intensity = 30, ambientColor = Vector:new(1,1,1,1)}
 mode.DiffuseCoefficient = 3
 mode.SpecularCoefficient = 5
 mode.AmbientCoefficient = 0.05
@@ -43,7 +43,7 @@ local function BlinnPhong(x,y,parameter)
     local ambient = mode.AmbientCoefficient * (LightIntensity/distance^2)
 
     acolor = acolor:mul(diffuse):add(acolor:mul(specular)):add(mode.Light.ambientColor:mul(ambient))
-
+    acolor.components[4] =1
     return acolor.components
 end
 local Shader = {vert = nil, fragInit = Init,frag = BlinnPhong}
