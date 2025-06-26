@@ -102,7 +102,7 @@ function love.keypressed(key)
         end
     end
     if key =="f" then
-        local objfile = love.filesystem.newFile("Assets/testShadow.obj")
+        local objfile = love.filesystem.newFile("Assets/testShadow2.obj")
         model = require("ModelLoad").loadObj(objfile)
         Render:SetShader("Blinn-PhongShadowShader")
     end

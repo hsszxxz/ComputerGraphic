@@ -4,9 +4,9 @@ MVPTransfer = require("MVPTransfer")
 ShadowMap = require("ShadowMap")
 
 local mode = {}
-mode.Light ={postion = Vector:new(4,4,7),intensity = 30, ambientColor = Vector:new(1,1,1,1)}
+mode.Light ={postion = Vector:new(4,4,4),intensity = 30, ambientColor = Vector:new(1,1,1,1)}
 mode.DiffuseCoefficient = 3
-mode.SpecularCoefficient = 5
+mode.SpecularCoefficient = 3
 mode.AmbientCoefficient = 0.05
 
 mode.camera = Vector:new(0,0,0)
@@ -54,7 +54,7 @@ local function BlinnPhong(x,y,parameter)
 
     local view = mode.camera:sub(vertext):normalize() --从顶点指向相机
     local h = light:add(view):normalize() --半程向量，角平分线
-    local specular =mode.SpecularCoefficient * (LightIntensity/distance^2) *(math.max(0,normal:dot(h)))^180
+    local specular =mode.SpecularCoefficient * (LightIntensity/distance^2) *(math.max(0,normal:dot(h)))^280
 
     local ambient = mode.AmbientCoefficient * (LightIntensity/distance^2)
 

@@ -91,9 +91,13 @@ function MVPMat: MVPTransfer(vertex,normal,uv)
     mul( Mat:new({{vertex.x,vertex.y,vertex.z,vertex.f}}):transpose())
     resultWolrd = resultWolrd:divScalar(resultWolrd.data[4][1])
 
+    local normalTrans = 
+    lookat(MVPMat.camera,MVPMat.center,MVPMat.up):mul(      --相机变换
+    RoateObject(MVPMat.roateX,MVPMat.roateY,MVPMat.roateZ)):
+    mul( Mat:new({{normal[1],normal[2],normal[3],0}}):transpose())
+
     local resultScreen = 
     ViewPort():mul(  --视口变换
-    --ProjectionNDC(1)):mul(--归一化
     PerspectiveProjection()):mul(
     ProjectionNDC(1)):mul(
     resultWolrd) 
@@ -103,7 +107,7 @@ function MVPMat: MVPTransfer(vertex,normal,uv)
     local resultVertex = Vertext:new(
         Vector:new(resultWolrd.data[1][1],resultWolrd.data[2][1],resultWolrd.data[3][1]),
         Vector:new(resultScreen.data[1][1],resultScreen.data[2][1],resultScreen.data[3][1]),
-        Vector:new(normal),
+        Vector:new(normalTrans.data[1][1],normalTrans.data[2][1],normalTrans.data[3][1]):normalize(),
         Vector:new(uv),
         Vector:new({vertex.x,vertex.y,vertex.z,vertex.f})
     )
